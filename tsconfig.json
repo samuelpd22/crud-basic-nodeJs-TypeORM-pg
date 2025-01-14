@@ -1,17 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "commonjs",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "strictPropertyInitialization": false
-
+    "target": "ES2020",                  // Transpila para ES2020
+    "module": "CommonJS",               // Usa o sistema de módulos CommonJS (requerido pelo Node.js)
+    "rootDir": "./src",                 // Define a pasta raiz do projeto
+    "outDir": "./dist",                 // Define a pasta de saída para os arquivos transpilados
+    "strict": true,                     // Ativa verificações estritas
+    "esModuleInterop": true,            // Permite importar módulos CommonJS com sintaxe ES6
+    "skipLibCheck": true,               // Ignora verificações de tipo em arquivos de definição de bibliotecas
+    "resolveJsonModule": true,          // Permite importar arquivos JSON
+    "experimentalDecorators": true,     // Necessário para o TypeORM (habilita decoradores)
+    "emitDecoratorMetadata": true,      // Necessário para o TypeORM (emite metadados para decoradores)
+    "moduleResolution": "node",         // Usa resolução de módulo estilo Node.js
+    "strictPropertyInitialization": false // Desativa a verificação de inicialização em propriedades (opcional)
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": ["src"],                   // Inclui a pasta "src" no projeto
+  "exclude": ["node_modules", "dist"]   // Exclui pastas desnecessárias
 }
