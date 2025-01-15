@@ -10,8 +10,11 @@ class User{
     @Column( 'varchar', {length:100 , nullable:false})
     name: string;
 
-    @Column( 'varchar', {length:100 , nullable:false})
+    @Column( 'varchar', {length:100 , nullable:false, unique:true})
     email: string;
+
+    @Column({type:"text"})
+    password: string;
     
 }
 export default User;
