@@ -1,0 +1,1 @@
+npm run typeorm migration:run -- -d src/db/data-source.ts // rodar migration

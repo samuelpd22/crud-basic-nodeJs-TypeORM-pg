@@ -1,26 +1,30 @@
-import { Request, Response, Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import UserRepository from "../repositories/UserRepository";
 import IUser from "../interfaces/IUser";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken'; 
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 const userRouter = Router();
 
 //GetMapping
-userRouter.get('/', async (_req: Request, res: Response): Promise<void> => {
+userRouter.get('/', async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const users = await UserRepository.getUsers();
         res.status(200).json(users);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
+        next(new Error("Erro ao buscar usuários")); // Envia o erro para o middleware de tratamento de erros
     }
 });
 
+// User Create
 //PostMapping
 userRouter.post('/', async (req: Request, res: Response): Promise<void> => {
     try {
-        const userData: IUser = req.body; 
+        const userData: IUser = req.body;
     
-        // Chama o repositório para salvar o novo usuário
         const newUser = await UserRepository.createUser(userData);  // Método createUser no repositório
 
         res.status(201).json(newUser);  // Retorna o usuário criado com status 201 (Created)
@@ -29,6 +33,43 @@ userRouter.post('/', async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
+
+// User login
+userRouter.post("/login", async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { email, password } = req.body;
+
+        const user = await UserRepository.findOneBy({email});
+        
+        if (!user) {
+            res.status(400).json({ message: "E-mail ou senha inválidos" });
+            return;
+        }
+
+        const verifyPass = await bcrypt.compare(password, user.password);
+        if (!verifyPass) {
+            res.status(400).json({ message: "E-mail ou senha inválidos" });
+            return;
+        }
+
+        const token = jwt.sign({ id: user.id }, process.env.JWT_PASS ?? "", {
+            expiresIn: "8h",
+        });
+
+        const { password: _, ...userLogin } = user;
+
+        res.status(200).json({
+            user: userLogin,
+            token: token,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+
+
 
 //PutMapping
 userRouter.put('/:id', async (req: Request, res: Response): Promise<void> => {
@@ -69,4 +110,23 @@ userRouter.delete('/:id', async (req: Request, res: Response): Promise<void> => 
 });
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export default userRouter;
+
